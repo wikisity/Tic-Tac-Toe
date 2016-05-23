@@ -41,16 +41,11 @@ def draw_board():
          # Lastly, Takes in the symbol to place at the requested choice.
 # Ouput: returns the board updated with the symbol of player. The board that is returned is always a list of strings
 def update_board(a_board, a_choice, symbol):
-    choice_index = 0
     for i in range(len(a_board)):
-        if a_board[i] == str(a_choice):
-            choice_index = i
-
-    if a_board[choice_index] != "X" and a_board[choice_index] != "O":
-        if symbol == "X" or symbol == "O":
-            a_board[choice_index] = symbol
-
-    return a_board
+        if a_board[i] == str(a_choice): # I found player choice/position to insert symbol
+            a_board[i] = symbol # I add symbol into player choice
+            return a_board
+    
 
 # winner() function returns 'True' or 'False' whether a winner is found or not.
 # Input: the board and the symbol of player as formal parameters
@@ -143,17 +138,14 @@ def winner(a_board, symbol):
 # Input: The board and the position to insert the symbol
 # output: returns True if space to insert symbol is alraedy taken. Returns False otherwise
 def error(a_board, a_choice):
-    choice_index = 0
     error = False
     for k in range(len(a_board)):
-        if a_board[k] == str(a_choice):
-            choice_index = k
+        if a_board[k] == str(a_choice): # The equal sign means that this space is not yet taken
+            return error
 
-    if a_board[choice_index] == "X" or a_board[choice_index] == "O":
-        error = True
-        return error
-    else:
-        return error
+    error = True # The space is likely to have an "O" or a "X". That is, the space is taken
+    return error
+    
 
 # all_filled() function returns 'True' or 'False' whether all positons are filled or not
 # Input: takes in the board only
@@ -226,6 +218,11 @@ def main():
                     print("The space is already taken.")
                     print("Player " + str(player1) + " what is your choice?")
                     player_choice = int(input("(1-9) or " + str(SAVE_GAME) + " to save " + str(LOAD_GAME) + " to load: "))
+                    
+                    while (player_choice < CONSTANT1 or player_choice > CONSTANT9) and (player_choice != LOAD_GAME and player_choice != SAVE_GAME):
+                        print("Player " + str(player1) + " what is your choice?")
+                        player_choice = int(input("(1-9) or " + str(SAVE_GAME) + " to save or " + str(LOAD_GAME) + " to load: "))
+                        
                     this_error = error(this_board, player_choice)
 
                 print()
