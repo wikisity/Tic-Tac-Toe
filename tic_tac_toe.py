@@ -222,44 +222,112 @@ def main():
                     while (player_choice < CONSTANT1 or player_choice > CONSTANT9) and (player_choice != LOAD_GAME and player_choice != SAVE_GAME):
                         print("Player " + str(player1) + " what is your choice?")
                         player_choice = int(input("(1-9) or " + str(SAVE_GAME) + " to save or " + str(LOAD_GAME) + " to load: "))
-                        
-                    this_error = error(this_board, player_choice)
+                    
+                    # Player choice is now a correct value. That is, only numbers between 1-9
+                    if player_choice != SAVE_GAME and player_choice != LOAD_GAME:
+                        this_error = error(this_board, player_choice)
+
+                    else: # Player choice is either -1 or -2
+                        this_error = False
 
                 print()
                 # Then my next action is to update the board. In other words, insert symbol into player's choice
-                this_board = update_board(this_board, player_choice, symbol_player1)
-                # Next, check if there is a winner
-                a_winner = winner(this_board, symbol_player1)
-                if a_winner:
-                    print("Player " + str(player1) + " wins!!!")
-                    found_winner = True # Once we find a winner, then we want to start a new game. That is,we change the value of 'found_winner' to 'True'
-                else:
-                    is_filled = all_filled(this_board) # If winner was not found, then we check if board is filled already
-                    if is_filled:
-                        board_filled = True
+                # Player choice was not to save game nor load it, but in the middle of a game may want to save or load the game.
+                if player_choice != SAVE_GAME and player_choice != LOAD_GAME:
+                    this_board = update_board(this_board, player_choice, symbol_player1)
+                    # Next, check if there is a winner
+                    a_winner = winner(this_board, symbol_player1)
+                    if a_winner:
+                        print("Player " + str(player1) + " wins!!!")
+                        found_winner = True # Once we find a winner, then we want to start a new game. That is,we change the value of 'found_winner' to 'True'
                     else:
-                        if not(this_error):
-                            # Final step, print the board that is updated and not filled yet
-                            for element in this_board:
-                                print(element, end = "")
-                            print()
+                        is_filled = all_filled(this_board) # If winner was not found, then we check if board is filled already
+                        if is_filled:
+                            board_filled = True
+                        else:
+                            if not(this_error):
+                                # Final step, print the board that is updated and not filled yet
+                                for element in this_board:
+                                    print(element, end = "")
 
-                    # We want to switch player and symbol player
-                    if player1 == CONSTANT2 and symbol_player1 == "O":
-                        player1 = CONSTANT1
-                        symbol_player1 = "X"
-                    elif player1 == CONSTANT2 and symbol_player1 == "X":
-                        player1 = CONSTANT1
-                        symbol_player1 = "O"
-                    elif player1 == CONSTANT1 and symbol_player1 == "O":
-                        player1 = CONSTANT2
-                        symbol_player1 = "X"
-                    elif player1 == CONSTANT1 and symbol_player1 == "X":
-                        player1 = CONSTANT2
-                        symbol_player1 = "O"
-                        
+                                print()
+
+                        # We want to switch player and symbol player
+                        if player1 == CONSTANT2 and symbol_player1 == "O":
+                            player1 = CONSTANT1
+                            symbol_player1 = "X"
+                        elif player1 == CONSTANT2 and symbol_player1 == "X":
+                            player1 = CONSTANT1
+                            symbol_player1 = "O"
+                        elif player1 == CONSTANT1 and symbol_player1 == "O":
+                            player1 = CONSTANT2
+                            symbol_player1 = "X"
+                        elif player1 == CONSTANT1 and symbol_player1 == "X":
+                            player1 = CONSTANT2
+                            symbol_player1 = "O"
+                            
+                            
+                            
+                # Player choose to load the game
+                # We are still inside the outer IF statement
+                elif player_choice == LOAD_GAME:
+                    file_to_load = open("tic.txt")
+                    my_string1 = file_to_load.readline()
+                    file_to_load.close()
+                    if len(my_string1) == 1:
+                        print("Error Action Loading. No file was previously saved.")
+
+                    elif not(len(my_string1) == 1):
+                        this_string2 = ""
+                        file_to_load = open("tic.txt")
+                        i = 0
+                        while i < FIFTH_LINE_OF_FILE:
+                            this_string2 += file_to_load.readline()
+                            i += 1
+                        print("Game Loaded")
+                        file_to_load.close()
+
+                        file_to_load = open("tic.txt")
+                        this_board = list(this_string2)
+                        for line in file_to_load:
+                            if len(line.split()) == LENGTH_LAST_LINE_OF_FILE:
+                                player1 = int(line.split()[0])
+                                symbol_player1 = line.split()[1]
+
+                        file_to_load.close()
+                        print(this_string2, end = "")
+                        print()
+                
+                
+                # Player choose to save the game, then we write into a file
+                # Here we are still inside the outer IF statement
+                elif player_choice == SAVE_GAME:
+                    file_to_save = open("tic.txt", "w")
+                    dash = "-" * 5
+                    if len(this_board) == FIRST_BOARD:
+                        file_to_save.write(this_board[0] + "|" + this_board[2] + "|" + this_board[4] + "\n" + dash + "\n" + this_board[8] + "|" + this_board[10] + "|" \
++ this_board[12] + "\n" + dash + "\n" + this_board[16] + "|" + this_board[18] + "|" + this_board[20] + "\n" + str(player1) + " " + symbol_player1 + "\n")
+
+                    elif len(this_board) == SECOND_BOARD:
+                        file_to_save.write(this_board[0] + "|" + this_board[2] + "|" + this_board[4] + "\n" + dash + "\n" + this_board[12] + "|" + this_board[14] + "|"\
+ + this_board[16] + "\n" + dash + "\n" + this_board[24] + "|" + this_board[26] + "|" + this_board[28] + "\n" + str(player1) + " " + symbol_player1 + "\n")
+
+                    print("File Saved")
+                    file_to_save.close()
+                    player_response = input("Play again?: ")
+                    if player_response in positive_responses:
+                        game_saved = True
+                    # Below, player choose to save the game and does not want to play anymore.
+                    elif player_response in negative_responses: # In this case I do save player number and its symbol. Then I exit the game
+                        print("Thank you for Playing")
+                        game_saved = True
+                        want_to_play = False
+                    
+                
+                            
             # Player choose to load the game
-             elif player_choice == LOAD_GAME:
+            # This is the same level as the outer IF statement
+            elif player_choice == LOAD_GAME:
                 file_to_load = open("tic.txt")
                 my_string1 = file_to_load.readline()
                 file_to_load.close()
@@ -286,8 +354,11 @@ def main():
                     file_to_load.close()
                     print(this_string2, end = "")
                     print()
+                    
+                    
 
             # Player choose to save the game, then we write into a file
+            # This is the same level as the outer IF statement
             elif player_choice == SAVE_GAME:
                 file_to_save = open("tic.txt", "w")
                 dash = "-" * 5
@@ -298,7 +369,6 @@ is_board[12] + "\n" + dash + "\n" + this_board[16] + "|" + this_board[18] + "|" 
                 elif len(this_board) == SECOND_BOARD:
                     file_to_save.write(this_board[0] + "|" + this_board[2] + "|" + this_board[4] + "\n" + dash + "\n" + this_board[12] + "|" + this_board[14] + "|" + t\
 his_board[16] + "\n" + dash + "\n" + this_board[24] + "|" + this_board[26] + "|" + this_board[28] + "\n" + str(player1) + " " + symbol_player1 + "\n")
-
 
                 print("File Saved")
                 file_to_save.close()
@@ -311,7 +381,9 @@ his_board[16] + "\n" + dash + "\n" + this_board[24] + "|" + this_board[26] + "|"
                     game_saved = True
                     want_to_play = False
 
-         if (player_choice != LOAD_GAME and player_choice != SAVE_GAME):
+
+
+        if (player_choice != LOAD_GAME and player_choice != SAVE_GAME):
             if (board_filled) and (not(found_winner)):
                 print("The board is filled and there is no winner.")
                 player_response = input("Do you want to play again?: ")
